@@ -11,4 +11,4 @@ Note that this program will attempt to use port 8080, the default for tomcat. Th
 
 Having its own tomcat instance also means you won't have to have the additional /marathon/ in the url.
 
-Switching to https will make it much easier to use, as particularly apple and their ipads/iphones makes a big deal out of the security implied, though all browsers will show an unlocked sign. 
+Switching to https will make it much easier to use, as particularly apple and their ipads/iphones makes a big deal out of the security implied, though all browsers will show an unlocked sign.
