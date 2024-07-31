@@ -2,6 +2,7 @@ let socket = null;
 
 function start() {
     console.log("Hello, world!");
+
     const PATH = `/ws`;
     console.log(PATH);
     socket = new WebSocket(PATH);
@@ -16,8 +17,7 @@ function updateWebsocket() {
         clearInterval(t);
         console.log("Disconnected");
     } else if (socket.readyState == WebSocket.OPEN) {
-        
-        socket.send("Hello!");
+        socket.send(document.getElementById("msg").value);
     } else {
         console.log(socket.readyState);
     }
