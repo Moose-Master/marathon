@@ -5,6 +5,8 @@ Run the command `mvn spring-boot:run`
 To build it, run `mvn install`
 * This command will build it, test it, and then put it into a .jar file
 * This command will not work if you have made fundamental changes to the project structure, in which case you should run `mvn clean install` which will first delete anything previously generated.
+* To then run it, run the command `java -jar <target/built file name>.jar`
+* On linux, to kill the process using the port, run `sudo fuser -k 8080/tcp`
 
 The produced file will have tomcat embedded, so no need to install that. Since it is already built, the target machine will also not need maven.
 Note that this program will attempt to use port 8080, the default for tomcat. Therefore, you should shutdown or move to another port any other tomcat instance you have running. Port 80 is the default for http(not https). When running for other people, port 80 should be used, but since this is commonly used or firewalled due to being a common, low number, common to hack port that may already be in use, I have decided against making it the default.
