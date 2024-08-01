@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BasicDatabase implements Database {
     public static final int RecentlyKeptMessages = 100;
+    public static final UUID GlobalChatId = UUID.nameUUIDFromBytes(new byte[16]); // It should be a zeroed uuid
     class CacheItem<T> {
         public static final long MAX_SECONDS_UNUSED = 60;
         public T item;
@@ -55,14 +56,23 @@ public class BasicDatabase implements Database {
 
     public BasicDatabase(String dataPath) throws IOException {
         this.directory = Path.of(dataPath);
-        if (Files.isDirectory(directory)) {
-
-        } else {
-            Files.createDirectory(directory);
+        boolean needsSetup = false;
+        if (!Files.isDirectory(directory)) {
+            needsSetup = true;
         }
         Files.createDirectories(Path.of(dataPath, "chat-metadata"));
         Files.createDirectories(Path.of(dataPath, "chat-logs"));
         Files.createDirectories(Path.of(dataPath, "users"));
+        if (needsSetup) {
+            Chat globalChat = new Chat();
+            globalChat.id = GlobalChatId;
+            globalChat.currentMessageIndex = 0;
+            globalChat.activeUsers = new ArrayList<>();
+            globalChat.recentMessages = new Message[RecentlyKeptMessages];
+            globalChat.recentMessagesStart = 0;
+            globalChat.userIds = new ArrayList<>();
+            this.insertChat(globalChat);
+        }
     }
 
     @Override
