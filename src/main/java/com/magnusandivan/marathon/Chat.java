@@ -18,4 +18,8 @@ public class Chat {
     int recentMessagesStart;
 
     int currentMessageIndex;
+
+    public Chat() {
+        
+    }
 }

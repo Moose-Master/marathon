@@ -6,4 +6,8 @@ public class Message {
     String value;
     Instant timestamp;
     UUID senderId;
+
+    public Message() {
+        
+    }
 }

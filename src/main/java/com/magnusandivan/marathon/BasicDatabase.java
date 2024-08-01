@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BasicDatabase implements Database {
@@ -24,6 +26,11 @@ public class BasicDatabase implements Database {
         public static final long MAX_SECONDS_UNUSED = 60;
         public T item;
         public Instant lastUsed;
+
+        public CacheItem(T item) {
+            this.item = item;
+            this.lastUsed = Instant.now();
+        }
 
         public static List<UUID> toRemove = new ArrayList<>();
 
@@ -44,7 +51,7 @@ public class BasicDatabase implements Database {
     Path directory;
     HashMap<UUID, CacheItem<UserInfo>> userCache = new HashMap<>();
     HashMap<UUID, CacheItem<Chat>> chatCache = new HashMap<>();
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 
     public BasicDatabase(String dataPath) throws IOException {
         this.directory = Path.of(dataPath);
@@ -83,6 +90,7 @@ public class BasicDatabase implements Database {
             } else {
                 chat.recentMessages = getMessages(chatId, chat.currentMessageIndex - RecentlyKeptMessages, RecentlyKeptMessages);
             }
+            chatCache.put(chatId, new CacheItem<Chat>(chat));
             return chat;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -121,6 +129,7 @@ public class BasicDatabase implements Database {
             UserInfo user = mapper.readValue(reader, UserInfo.class);
             user.id = userId;
             user.activeUser = null; // It would already be in cache if the user was active
+            userCache.put(userId, new CacheItem<UserInfo>(user));
             return user;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -154,8 +163,8 @@ public class BasicDatabase implements Database {
     public void insertChat(Chat chat) {
         try {
             mapper.writeValue(directory.resolve("chat-metadata/", chat.id.toString() + ".json").toFile(), chat);
-            File otherFile = directory.resolve("chat-logs/", chat.id.toString() + ".json").toFile();
-            otherFile.createNewFile(); // Doesn't overwrite existing file(I think)
+            chatCache.put(chat.id, new CacheItem<Chat>(chat));
+            directory.resolve("chat-logs/", chat.id.toString() + ".json").toFile().createNewFile(); // Doesn't overwrite existing file(I think)
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -164,6 +173,7 @@ public class BasicDatabase implements Database {
     public void insertUser(UserInfo user) {
         try {
             mapper.writeValue(directory.resolve("users/", user.id.toString() + ".json").toFile(), user);
+            userCache.put(user.id, new CacheItem<UserInfo>(user));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
