@@ -11,17 +11,17 @@ function start() {
         console.log(`Message: ${msg}`);
         document.getElementById("wsout").innerText += msg + "\n";
     });
+
+    const node = document.getElementById("msg");
+    node.addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+            updateWebsocket()
+        }
+    });
 }
-const node = document.getElementById("msg");
-node.addEventListener("keyup", function(event) {
-    if (event.key === "Enter") {
-        updateWebsocket()
-    }
-});
 
 function updateWebsocket() {
     if(socket.readyState == WebSocket.CLOSED) {
-        clearInterval(t);
         console.log("Disconnected");
     } else if (socket.readyState == WebSocket.OPEN) {
         socket.send(document.getElementById("msg").value);
@@ -30,4 +30,4 @@ function updateWebsocket() {
     }
 }
 
-start()
+window.onload = start;
