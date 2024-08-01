@@ -12,6 +12,13 @@ function start() {
         document.getElementById("wsout").innerText += msg + "\n";
     });
 }
+const node = document.getElementById("msg");
+node.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+        updateWebsocket()
+    }
+});
+
 function updateWebsocket() {
     if(socket.readyState == WebSocket.CLOSED) {
         clearInterval(t);
@@ -22,5 +29,5 @@ function updateWebsocket() {
         console.log(socket.readyState);
     }
 }
-let t = setInterval(updateWebsocket, 1000);
+
 start()
