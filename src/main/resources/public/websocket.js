@@ -25,6 +25,7 @@ function updateWebsocket() {
         console.log("Disconnected");
     } else if (socket.readyState == WebSocket.OPEN) {
         socket.send(document.getElementById("msg").value);
+        document.getElementById("msg").value = "";
     } else {
         console.log(socket.readyState);
     }
