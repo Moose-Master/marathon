@@ -3,6 +3,7 @@ package com.magnusandivan.marathon;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class BasicDatabase implements Database {
     public static final int RecentlyKeptMessages = 100;
@@ -52,7 +54,7 @@ public class BasicDatabase implements Database {
     Path directory;
     HashMap<UUID, CacheItem<UserInfo>> userCache = new HashMap<>();
     HashMap<UUID, CacheItem<Chat>> chatCache = new HashMap<>();
-    ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+    ObjectMapper mapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY).registerModule(new JavaTimeModule());
 
     public BasicDatabase(String dataPath) throws IOException {
         this.directory = Path.of(dataPath);
@@ -102,7 +104,10 @@ public class BasicDatabase implements Database {
             }
             chatCache.put(chatId, new CacheItem<Chat>(chat));
             return chat;
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
+            return null;
+        } 
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -111,7 +116,7 @@ public class BasicDatabase implements Database {
     public Message[] getMessages(UUID chatId, int startIndex, int numMessages) {
         try {
             Message[] messages = new Message[numMessages];
-            BufferedReader reader = new BufferedReader(new FileReader(directory.resolve("chat-logs/", chatId.toString() + ".json").toFile()));
+            BufferedReader reader = new BufferedReader(new FileReader(directory.resolve("chat-logs/", chatId.toString() + ".log").toFile()));
             for (int i = 0;i < startIndex;i++) {
                 reader.readLine();
             }
@@ -121,6 +126,8 @@ public class BasicDatabase implements Database {
             }
             reader.close();
             return messages;
+        } catch (FileNotFoundException e) {
+            return null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -141,6 +148,8 @@ public class BasicDatabase implements Database {
             user.activeUser = null; // It would already be in cache if the user was active
             userCache.put(userId, new CacheItem<UserInfo>(user));
             return user;
+        } catch (FileNotFoundException e) {
+            return null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -148,7 +157,9 @@ public class BasicDatabase implements Database {
     @Override
     public void insertMessages(UUID chatId, Message[] messages) {
         try {
-            File file = directory.resolve("chat-logs/", chatId.toString() + ".json").toFile();
+            Chat chat = getChat(chatId);
+            chat.writeNewMessages(messages);
+            File file = directory.resolve("chat-logs/", chatId.toString() + ".log").toFile();
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
             for(Message msg : messages) {
                 writer.write(mapper.writeValueAsString(msg));
@@ -174,7 +185,7 @@ public class BasicDatabase implements Database {
         try {
             mapper.writeValue(directory.resolve("chat-metadata/", chat.id.toString() + ".json").toFile(), chat);
             chatCache.put(chat.id, new CacheItem<Chat>(chat));
-            directory.resolve("chat-logs/", chat.id.toString() + ".json").toFile().createNewFile(); // Doesn't overwrite existing file(I think)
+            directory.resolve("chat-logs/", chat.id.toString() + ".log").toFile().createNewFile(); // Doesn't overwrite existing file(I think)
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

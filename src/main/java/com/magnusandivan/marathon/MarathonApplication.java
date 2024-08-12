@@ -1,6 +1,10 @@
 package com.magnusandivan.marathon;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
@@ -13,5 +17,10 @@ public class MarathonApplication {
 		SpringApplication.run(MarathonApplication.class, args);
 		System.out.println("Hello, world!");
 		Database = new BasicDatabase("data");
+
+		UUID chatId = UUID.fromString("4ae71336-e44b-39bf-b9d2-752e234818a5");
+		Database.insertMessages(chatId, new Message[] {
+			new Message("Hello!", Instant.now(), UUID.randomUUID())
+		});
 	}
 }

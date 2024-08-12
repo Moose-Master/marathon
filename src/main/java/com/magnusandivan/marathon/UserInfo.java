@@ -13,11 +13,13 @@ public class UserInfo {
     // This will be null unless the user is online
     MessageWebSocketHandler.IndividualHandler activeUser;
     String name;
+    // Should be all lowercase
+    String username;
     // The chats the user is in
     List<UUID> chatIds;
 
     public UserInfo() {
-        
+
     }
     public UserInfo(String name) {
         this.id = UUID.randomUUID();

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to Marathon</title>
+</head>
+<body>
+    <form action="" method="post" style="margin:auto;width:250px;margin-top:200px;">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required />
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required />
+        </div>
+        <div>
+            <!--
+                <label for="login">Login</label>
+                <br>
+            -->
+            <input type="submit" name="login" id="login" formaction="/login" value="Log in" />
+        </div>
+        <div>
+            <!--
+                <label for="register">Register</label>
+                <br>
+            -->
+            <input type="submit" name="register" id="register" formaction="/register" value="Register" />
+        </div>
+    </form>
+</body>
+</html>

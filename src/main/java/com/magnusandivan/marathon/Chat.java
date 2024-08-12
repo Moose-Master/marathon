@@ -26,7 +26,8 @@ public class Chat {
         int messageIndex = recentMessagesStart;
         // We want the last messages in the array to be the first to be rendered
         for (int i = 0;i < messages.length;i++) {
-            messageIndex = (messageIndex - 1) % recentMessages.length; // This means it will be put back to the end of the list
+            messageIndex = Math.floorMod(messageIndex - 1, recentMessages.length); // Floor mod behaves like you would expect mod to, it makes sure its always [0,x) instead of (-x, x)
+
             recentMessages[messageIndex] = messages[i];
         }
         recentMessagesStart = messageIndex;
@@ -34,7 +35,9 @@ public class Chat {
     public Message[] getRecentMessages() {
         Message[] messages = new Message[recentMessages.length];
         for (int i = 0;i < messages.length;i++) {
-            messages[i] = recentMessages[(recentMessagesStart + i) % messages.length];
+            Message m = recentMessages[(recentMessagesStart + i) % messages.length];
+            if (m == null) break;
+            messages[i] = m;
         }
         return messages;
     }
