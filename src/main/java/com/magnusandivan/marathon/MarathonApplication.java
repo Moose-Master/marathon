@@ -17,8 +17,8 @@ public class MarathonApplication {
 		SpringApplication.run(MarathonApplication.class, args);
 		System.out.println("Hello, world!");
 		Database = new BasicDatabase("data");
-
-		UUID chatId = UUID.fromString("4ae71336-e44b-39bf-b9d2-752e234818a5");
+		// Insert a random chat message for example usage of the database
+		UUID chatId = BasicDatabase.GlobalChatId;
 		Database.insertMessages(chatId, new Message[] {
 			new Message("Hello!", Instant.now(), UUID.randomUUID())
 		});

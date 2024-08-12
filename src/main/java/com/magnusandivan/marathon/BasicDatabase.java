@@ -104,10 +104,7 @@ public class BasicDatabase implements Database {
             }
             chatCache.put(chatId, new CacheItem<Chat>(chat));
             return chat;
-        } catch (FileNotFoundException e) {
-            return null;
-        } 
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
