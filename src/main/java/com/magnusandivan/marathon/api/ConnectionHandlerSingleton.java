@@ -11,7 +11,6 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import com.magnusandivan.marathon.Database;
 import com.magnusandivan.marathon.MarathonApplication;
 
 public abstract class ConnectionHandlerSingleton {

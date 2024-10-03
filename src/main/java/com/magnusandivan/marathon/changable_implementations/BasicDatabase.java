@@ -22,8 +22,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.magnusandivan.marathon.Chat;
-import com.magnusandivan.marathon.Database;
 import com.magnusandivan.marathon.UserInfo;
+import com.magnusandivan.marathon.api.Database;
 
 public class BasicDatabase implements Database {
     public static final int RecentlyKeptMessages = 100;
@@ -171,6 +171,7 @@ public class BasicDatabase implements Database {
         try {
             Chat chat = getChat(chatId);
             chat.writeNewMessages(messages);
+            insertChat(chat); // Update info like the message index
             File file = directory.resolve("chat-logs/" + chatId.toString() + ".log").toFile();
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
             for (Message msg : messages) {
@@ -249,5 +250,10 @@ public class BasicDatabase implements Database {
     public void flush() {
         // We won't flush anything because in this basic database everything is
         // automatically written immediately to the output
+    }
+
+    @Override
+    public UUID globalChatId() {
+        return GlobalChatId;
     }
 }

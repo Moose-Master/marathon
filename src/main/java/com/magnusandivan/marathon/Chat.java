@@ -20,6 +20,8 @@ public class Chat {
     public Message[] recentMessages;
     @JsonIgnore
     public int recentMessagesStart;
+    @JsonIgnore
+    public int recentMessagesCount;
 
     public int currentMessageIndex;
 
@@ -27,23 +29,34 @@ public class Chat {
 
     }
 
+    /**
+     * Writes messages to the recentMessages location in memory, but doesn't save
+     * them to the database
+     * 
+     * @param messages
+     */
     public void writeNewMessages(Message[] messages) {
-        int messageIndex = recentMessagesStart;
-        // We want the last messages in the array to be the first to be rendered
+        int messageIndex = (recentMessagesStart + recentMessagesCount) % recentMessages.length;
         for (int i = 0; i < messages.length; i++) {
-            messageIndex = Math.floorMod(messageIndex - 1, recentMessages.length); // Floor mod behaves like you would
-                                                                                   // expect mod to, it makes sure its
-                                                                                   // always [0,x) instead of (-x, x)
-
+            messageIndex = (messageIndex + 1) % recentMessages.length;
+            if (recentMessages[messageIndex] != null) {
+                recentMessagesStart = (messageIndex + 1) % recentMessages.length;
+            }
             recentMessages[messageIndex] = messages[i];
         }
-        recentMessagesStart = messageIndex;
+        currentMessageIndex += messages.length;
     }
 
+    /**
+     * Returns the most recent messages, up to a limit. However, if there are very
+     * few messages, some elements of the array returned may be null
+     * 
+     * @return The messages
+     */
     public Message[] getRecentMessages() {
         Message[] messages = new Message[recentMessages.length];
-        for (int i = 0; i < messages.length; i++) {
-            Message m = recentMessages[(recentMessagesStart + i) % messages.length];
+        for (int i = 0; i < recentMessagesCount; i++) {
+            Message m = recentMessages[(recentMessagesStart + i) % recentMessages.length];
             if (m == null)
                 break;
             messages[i] = m;

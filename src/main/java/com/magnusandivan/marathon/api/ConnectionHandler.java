@@ -84,7 +84,7 @@ public abstract class ConnectionHandler {
         try {
             websocketSession.sendMessage(new TextMessage(payload));
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             // If an error occurs, close the session immediately
             getSingleton().closeSession(websocketSession, CloseStatus.NO_STATUS_CODE);
             return false;
