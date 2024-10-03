@@ -86,7 +86,7 @@ public class BasicDatabase implements Database {
         }
 
         try {
-            FileReader reader = new FileReader(directory.resolve("chat-metadata/", chatId.toString() + ".json").toFile());
+            FileReader reader = new FileReader(directory.resolve("chat-metadata/" + chatId.toString() + ".json").toFile());
             Chat chat = mapper.readValue(reader, Chat.class);
             chat.id = chatId;
             chat.activeUsers = new ArrayList<>();
@@ -113,7 +113,7 @@ public class BasicDatabase implements Database {
     public Message[] getMessages(UUID chatId, int startIndex, int numMessages) {
         try {
             Message[] messages = new Message[numMessages];
-            BufferedReader reader = new BufferedReader(new FileReader(directory.resolve("chat-logs/", chatId.toString() + ".log").toFile()));
+            BufferedReader reader = new BufferedReader(new FileReader(directory.resolve("chat-logs/" + chatId.toString() + ".log").toFile()));
             for (int i = 0;i < startIndex;i++) {
                 reader.readLine();
             }
@@ -139,7 +139,7 @@ public class BasicDatabase implements Database {
         }
 
         try {
-            FileReader reader = new FileReader(directory.resolve("users/", userId.toString() + ".json").toFile());
+            FileReader reader = new FileReader(directory.resolve("users/" + userId.toString() + ".json").toFile());
             UserInfo user = mapper.readValue(reader, UserInfo.class);
             user.id = userId;
             user.activeUser = null; // It would already be in cache if the user was active
@@ -156,7 +156,7 @@ public class BasicDatabase implements Database {
         try {
             Chat chat = getChat(chatId);
             chat.writeNewMessages(messages);
-            File file = directory.resolve("chat-logs/", chatId.toString() + ".log").toFile();
+            File file = directory.resolve("chat-logs/" + chatId.toString() + ".log").toFile();
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
             for(Message msg : messages) {
                 writer.write(mapper.writeValueAsString(msg));
@@ -180,9 +180,9 @@ public class BasicDatabase implements Database {
     @Override
     public void insertChat(Chat chat) {
         try {
-            mapper.writeValue(directory.resolve("chat-metadata/", chat.id.toString() + ".json").toFile(), chat);
+            mapper.writeValue(directory.resolve("chat-metadata/" + chat.id.toString() + ".json").toFile(), chat);
             chatCache.put(chat.id, new CacheItem<Chat>(chat));
-            directory.resolve("chat-logs/", chat.id.toString() + ".log").toFile().createNewFile(); // Doesn't overwrite existing file(I think)
+            directory.resolve("chat-logs/" + chat.id.toString() + ".log").toFile().createNewFile(); // Doesn't overwrite existing file(I think)
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -190,7 +190,7 @@ public class BasicDatabase implements Database {
     @Override
     public void insertUser(UserInfo user) {
         try {
-            mapper.writeValue(directory.resolve("users/", user.id.toString() + ".json").toFile(), user);
+            mapper.writeValue(directory.resolve("users/" + user.id.toString() + ".json").toFile(), user);
             userCache.put(user.id, new CacheItem<UserInfo>(user));
         } catch (Exception e) {
             throw new RuntimeException(e);
