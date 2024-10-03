@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 
 import com.magnusandivan.marathon.api.ImplementationSet;
 import com.magnusandivan.marathon.changable_implementations.BasicDatabase;
+import com.magnusandivan.marathon.changable_implementations.BasicImplementationSet;
 import com.magnusandivan.marathon.changable_implementations.Message;
 
 @Controller
@@ -23,7 +24,7 @@ public class MarathonApplication {
 	 * You should change this when you want to change the behavior being used for
 	 * different things
 	 */
-	public static ImplementationSet ImplementationSet = new ImplementationSet();
+	public static ImplementationSet ImplementationSet = new BasicImplementationSet();
 
 	public static void main(String[] args) throws IOException {
 		SpringApplication.run(MarathonApplication.class, args);
