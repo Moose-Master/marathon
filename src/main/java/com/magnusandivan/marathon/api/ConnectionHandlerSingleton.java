@@ -59,12 +59,13 @@ public abstract class ConnectionHandlerSingleton {
     }
 
     /**
-     * Don't modify this list.
+     * An of all connections when this is called. These may become disconnected over
+     * time.
      * 
-     * @return a list of all connections
+     * @return an array of all connections
      */
-    public List<ConnectionHandler> getAllHandlers() {
-        return all;
+    public ConnectionHandler[] getAllHandlers() {
+        return all.toArray(new ConnectionHandler[0]);
     }
 
     /**
@@ -137,7 +138,8 @@ public abstract class ConnectionHandlerSingleton {
      */
     public void _afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         ConnectionHandler handler = map.get(session.getId());
-        if (handler != null) {
+        if (handler != null && !handler.getDisconnected()) {
+            handler.setDisconnected();
             handler.onDisconnected(status);
         }
     }

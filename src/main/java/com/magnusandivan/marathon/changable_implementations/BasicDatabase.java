@@ -26,7 +26,8 @@ import com.magnusandivan.marathon.UserInfo;
 import com.magnusandivan.marathon.api.Database;
 
 public class BasicDatabase implements Database {
-    public static final int RecentlyKeptMessages = 100;
+    public static final boolean ClearCache = false;
+    public static final int RecentlyKeptMessages = 10;
     public static final UUID GlobalChatId = UUID.nameUUIDFromBytes(new byte[16]); // It should be a zeroed uuid
 
     class CacheItem<T> {
@@ -46,18 +47,16 @@ public class BasicDatabase implements Database {
             // We won't actually clear the cache as right now it should only get out of
             // control with millions of chats/users and I haven't set up a system to keep
             // track of which ones have been used
-            /*
-             * for (Map.Entry<UUID, CacheItem<T>> a : map.entrySet()) {
-             * if (Duration.between(a.getValue().lastUsed, now).getSeconds() >
-             * CacheItem.MAX_SECONDS_UNUSED) {
-             * toRemove.add(a.getKey());
-             * }
-             * }
-             * for (UUID uuid : toRemove) {
-             * map.remove(uuid);
-             * }
-             * toRemove.clear();
-             */
+
+            for (Map.Entry<UUID, CacheItem<T>> a : map.entrySet()) {
+                if (Duration.between(a.getValue().lastUsed, now).getSeconds() > CacheItem.MAX_SECONDS_UNUSED) {
+                    toRemove.add(a.getKey());
+                }
+            }
+            for (UUID uuid : toRemove) {
+                map.remove(uuid);
+            }
+            toRemove.clear();
         }
     }
 
@@ -115,6 +114,7 @@ public class BasicDatabase implements Database {
                 chat.recentMessages = getMessages(chatId, chat.currentMessageIndex - RecentlyKeptMessages,
                         RecentlyKeptMessages);
             }
+            chat.recentMessagesCount = Integer.min(chat.currentMessageIndex, RecentlyKeptMessages);
             chatCache.put(chatId, new CacheItem<Chat>(chat));
             return chat;
         } catch (Exception e) {
@@ -230,20 +230,22 @@ public class BasicDatabase implements Database {
 
     @Override
     public void garbageCollection() {
-        CacheItem.clearCache(this.chatCache);
-        // We want a special version to not remove from the cache users which are logged
-        // in but not active
-        Instant now = Instant.now();
-        for (Map.Entry<UUID, CacheItem<UserInfo>> a : userCache.entrySet()) {
-            if (Duration.between(a.getValue().lastUsed, now).getSeconds() > CacheItem.MAX_SECONDS_UNUSED
-                    && a.getValue().item.activeUser == null) {
-                CacheItem.toRemove.add(a.getKey());
+        if (ClearCache) {
+            CacheItem.clearCache(this.chatCache);
+            // We want a special version to not remove from the cache users which are logged
+            // in but not "active"
+            Instant now = Instant.now();
+            for (Map.Entry<UUID, CacheItem<UserInfo>> a : userCache.entrySet()) {
+                if (Duration.between(a.getValue().lastUsed, now).getSeconds() > CacheItem.MAX_SECONDS_UNUSED
+                        && a.getValue().item.activeUser == null) {
+                    CacheItem.toRemove.add(a.getKey());
+                }
             }
+            for (UUID uuid : CacheItem.toRemove) {
+                userCache.remove(uuid);
+            }
+            CacheItem.toRemove.clear();
         }
-        for (UUID uuid : CacheItem.toRemove) {
-            userCache.remove(uuid);
-        }
-        CacheItem.toRemove.clear();
     }
 
     @Override

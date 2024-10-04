@@ -12,6 +12,7 @@ public abstract class ConnectionHandler {
     private ConnectionHandlerSingleton singleton;
     private WebSocketSession websocketSession;
     private UserInfo user;
+    private boolean disconnected;
 
     /**
      * Handle an incoming text message
@@ -33,6 +34,10 @@ public abstract class ConnectionHandler {
     public ConnectionHandler(ConnectionHandlerSingleton singleton, WebSocketSession session) {
         this.singleton = singleton;
         this.websocketSession = session;
+    }
+
+    public boolean getDisconnected() {
+        return disconnected;
     }
 
     /**
@@ -73,6 +78,10 @@ public abstract class ConnectionHandler {
         this.user = user;
     }
 
+    void setDisconnected() {
+        this.disconnected = true;
+    }
+
     /**
      * Attempts to send a message
      * 
@@ -81,13 +90,17 @@ public abstract class ConnectionHandler {
      *         cleaned up already
      */
     public boolean sendPayload(String payload) {
-        try {
-            websocketSession.sendMessage(new TextMessage(payload));
-            return true;
-        } catch (Exception e) {
-            // If an error occurs, close the session immediately
-            getSingleton().closeSession(websocketSession, CloseStatus.NO_STATUS_CODE);
+        if (disconnected) {
             return false;
+        } else {
+            try {
+                websocketSession.sendMessage(new TextMessage(payload));
+                return true;
+            } catch (Exception e) {
+                // If an error occurs, close the session immediately
+                getSingleton().closeSession(websocketSession, CloseStatus.NO_STATUS_CODE);
+                return false;
+            }
         }
     }
 }

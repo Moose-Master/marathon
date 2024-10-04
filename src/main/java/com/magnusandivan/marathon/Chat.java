@@ -30,20 +30,22 @@ public class Chat {
     }
 
     /**
-     * Writes messages to the recentMessages location in memory, but doesn't save
-     * them to the database
+     * Writes messages to the recentMessages location in memory, and updates the
+     * number of messages, the latter of which can be written with this chat, but it
+     * doesn't save either immediately
      * 
-     * @param messages
+     * @param messages The messages to store
      */
     public void writeNewMessages(Message[] messages) {
-        int messageIndex = (recentMessagesStart + recentMessagesCount) % recentMessages.length;
+        int start = recentMessagesStart + recentMessagesCount;
         for (int i = 0; i < messages.length; i++) {
-            messageIndex = (messageIndex + 1) % recentMessages.length;
-            if (recentMessages[messageIndex] != null) {
-                recentMessagesStart = (messageIndex + 1) % recentMessages.length;
-            }
-            recentMessages[messageIndex] = messages[i];
+            recentMessages[(start + i) % recentMessages.length] = messages[i];
         }
+        if (messages.length + recentMessagesCount > recentMessages.length) {
+            recentMessagesStart = (recentMessagesStart + messages.length + recentMessagesCount - recentMessages.length)
+                    % recentMessages.length;
+        }
+        recentMessagesCount = Integer.min(recentMessagesCount + messages.length, recentMessages.length);
         currentMessageIndex += messages.length;
     }
 
@@ -54,12 +56,9 @@ public class Chat {
      * @return The messages
      */
     public Message[] getRecentMessages() {
-        Message[] messages = new Message[recentMessages.length];
+        Message[] messages = new Message[recentMessagesCount];
         for (int i = 0; i < recentMessagesCount; i++) {
-            Message m = recentMessages[(recentMessagesStart + i) % recentMessages.length];
-            if (m == null)
-                break;
-            messages[i] = m;
+            messages[i] = recentMessages[(recentMessagesStart + i) % recentMessages.length];
         }
         return messages;
     }

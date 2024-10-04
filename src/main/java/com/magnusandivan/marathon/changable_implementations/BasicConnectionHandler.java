@@ -17,25 +17,20 @@ public class BasicConnectionHandler extends ConnectionHandler {
     public BasicConnectionHandler(ConnectionHandlerSingleton singleton, WebSocketSession session) {
         super(singleton, session);
         Database database = getSingleton().getDatabase();
+        uuid = UUID.randomUUID();
         for (Message m : database.getChat(database.globalChatId()).getRecentMessages()) {
             if (m == null) {
                 return;
             }
             sendPayload(m.value);
         }
-        uuid = UUID.randomUUID();
     }
 
     @Override
     public void handlePayload(String payload) {
-        List<ConnectionHandler> handlers = getSingleton().getAllHandlers();
-        for (int i = 0; i < handlers.size(); i++) {
-            ConnectionHandler handler = handlers.get(i);
+        for (ConnectionHandler handler : getSingleton().getAllHandlers()) {
             if (handler != this) {
                 if (!handler.sendPayload(payload)) {
-                    // If the send fails, then the handler will be removed and we can subtract one
-                    // from the index
-                    i--;
                 }
             }
         }
