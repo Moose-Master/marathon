@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="scroller.css">
+</head>
+<body>
+    
+<center>
+    
+      <h1>
+        Test For a Scrolling Text Box
+        That takes an Input
+    </h1>  
+    <div class="scroller">
+      <div class="scroller-content" id="scrollerContent">
+        <div class="item"></div>
+      </div>
+      
+    </div>
+    <div onKeyPress="return sendEnter(event)">
+      <form id="form01" action="/" onsubmit="return false;" >
+        <input id="f1box" type="text" name="fname" placeholder="Message">
+      </form>
+    </div>
+    <a href="/">Home</a>
+    
+</center>
+
+<script src="/scroller.js"></script>
+
+</body>
+</html>
