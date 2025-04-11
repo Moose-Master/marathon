@@ -1,7 +1,9 @@
 let socket = null;
+let input_box = null;
 
 function start() {
     console.log("Hello, world!");
+    input_box = document.getElementById("msg");
 
     const PATH = `/ws`;
     console.log(PATH);
@@ -11,24 +13,28 @@ function start() {
         console.log(`Message: ${msg}`);
         document.getElementById("wsout").innerText += msg + "\n";
     });
-
-    const node = document.getElementById("msg");
-    node.addEventListener("keyup", function (event) {
-        if (event.key === "Enter") {
-            updateWebsocket()
+    socket.addEventListener("close", (event) => {
+        console.log("Disconnected");
+    })
+    socket.addEventListener("error", (event) => {
+        console.log(`Error: ${event}`);
+    });
+    input_box.addEventListener("keypress", (event) => {
+        if (event.key == "Enter") {
+            sendMessage();
         }
     });
 }
-
-function updateWebsocket() {
-    if(socket.readyState == WebSocket.CLOSED) {
-        console.log("Disconnected");
-    } else if (socket.readyState == WebSocket.OPEN) {
-        socket.send(document.getElementById("msg").value);
-        document.getElementById("msg").value = "";
+function sendMessage() {
+    if (socket.readyState == WebSocket.OPEN) {
+        let value = input_box.value;
+        socket.send(value);
+        console.log(`Sent message ${value}`);
+        input_box.value = "";
     } else {
         console.log(socket.readyState);
     }
 }
 
+console.log("Sanity check 2");
 window.onload = start;
