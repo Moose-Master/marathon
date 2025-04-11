@@ -1,0 +1,12 @@
+.scroller {
+    overflow: auto;
+    height: 100px;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-anchor: auto !important;
+}
+
+.scroller .scroller-content .item {
+    height: 20px;
+    transform: translateZ(0);
+}

@@ -35,5 +35,6 @@ function sendMessage() {
         console.log(socket.readyState);
     }
 }
+
 console.log("Sanity check 2");
 window.onload = start;
