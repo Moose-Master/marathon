@@ -1,14 +1,10 @@
 package com.magnusandivan.marathon;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 
 import com.magnusandivan.marathon.api.Database;

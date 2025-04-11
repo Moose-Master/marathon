@@ -1,7 +1,6 @@
 package com.magnusandivan.marathon.changable_implementations;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.web.socket.CloseStatus;

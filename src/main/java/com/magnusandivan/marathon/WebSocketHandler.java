@@ -2,7 +2,6 @@ package com.magnusandivan.marathon;
 
 import java.io.IOException;
 
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
