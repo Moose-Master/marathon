@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<script src="login.js"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,29 +8,27 @@
 </head>
 
 <body>
-    <form action="" method="post" style="margin:auto;width:250px;margin-top:200px;">
+    <form action="" method="post" style="margin:auto;width:250px;margin-top:200px;" onsubmit="test()">
         <div>
             <label for="username">Username</label>
-            <input type="text" name="username" id="username" required />
+            <input type="text" name="username" id="username" autocomplete="username" required />
         </div>
+        <!--
         <div>
+            
             <label for="password">Password</label>
-            <input type="password" name="password" id="password" required />
+            <input type="password" name="password" id="password" autocomplete="current-password" required />
+            
         </div>
+        -->
         <div>
-            <!--
-                <label for="login">Login</label>
-                <br>
-            -->
-            <input type="submit" name="login" id="login" formaction="/login" value="Log in" />
-        </div>
-        <div>
-            <!--
-                <label for="register">Register</label>
-                <br>
-            -->
+            
+            <input type="submit" name="login" id="login" formaction="test.html" value="Log in" />
+            <!-- 
             <input type="submit" name="register" id="register" formaction="/register" value="Register" />
+            -->
         </div>
+        <a href="index.html">Back to home page</a>
     </form>
 </body>
 
