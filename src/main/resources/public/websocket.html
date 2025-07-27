@@ -4,17 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="websocket.css">
 </head>
-
 <body>
-    <script src="/websocket.js"></script>
-    <h1>
-        Websocket test page
-    </h1>
-    <input type="text" id="msg" placeholder="Message">
+    
+<center>
+    
+      <h1>
+        Websocket Page
+    </h1>  
+    <div class="scroller">
+      <div class="scroller-content" id="scrollerContent">
+        <div class="item"></div>
+      </div>
+      
+    </div>
+    <div onKeyPress="return sendEnter(event)">
+      <form id="form01" action="/" onsubmit="return false;" >
+        <input id="f1box" type="text" name="fname" placeholder="Message">
+      </form>
+    </div>
+    
+</center>
 
-    <p id="wsout"></p> <!--Websocket output place-->
+<script src="websocket.js"></script>
+
 </body>
-
 </html>
